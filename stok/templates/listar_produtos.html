@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>Lista de produtos</title>
+  </head>
+  <body>
+
+    <div class="container">
+      
+      <form action="{% url 'listar_produtos_preco' %}" method="GET">
+      <label for="">Digite a partir do preço que você que comprar</label>
+      <input class="form-control" type="number" name="preco">
+      <br>
+      <input class="btn btn-primary" type="submit" value="Filtrar">
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Nome</th>
+          <th scope="col">Preço</th>
+          <th scope="col">Validade</th>
+          <th scope="col">Quantidade</th>
+          <th scope="col">Excluir</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {% for p in produtos %}
+          <th scope="row">{{p.nome}}</th>
+          <td>{{p.preco}}</td>
+          <td>{{p.validade}}</td>
+          <td>{{p.quantidade}}</td>
+          <td><a class="btn btn-danger" href="/stok/deletar_produto/{{p.id}}">Excluir</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+     
+    
+    </table>
+    <a href="{% url 'cadastrar_produto' %}" class="btn btn-success mb-3">Cadastrar produto</a>
+  </div>
+ 
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+
+  </body>
+</html>
