@@ -1,58 +1,118 @@
-{% load filters %} <style>
-    /* Estilo para deixar a tabela mais limpa no mobile */
-    .table th, .table td {
-        padding: 12px 8px;
-        vertical-align: middle;
-    }
-    
-    .img-carro {
-        width: 100px;
-        height: auto;
-        border-radius: 5px;
-    }
-</style>
+{% load filters %}
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<div class="container">
-    <div class="table-responsive">
-        <table class="table table-hover text-nowrap"> 
-            <thead class="table-light">
-                <tr>
-                    <th scope="col">Marca</th>
-                    <th scope="col">Modelo</th>
-                    <th scope="col">Ano</th>
-                    <th scope="col">Preço</th>
-                    <th scope="col">Tipo</th>
-                    <th scope="col">Estado</th>
-                    <th scope="col">Cor</th>
-                    <th scope="col">Foto</th>
-                    <th scope="col">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for p in produtos %}
-                <tr>
-                    <td>{{p.get_marca_display}}</td>
-                    <td>{{p.modelo}}</td>
-                    <td>{{p.ano_fabricacao}}</td>
-                    <td>R${{p.preco|br_money}}</td>
-                    <td>{{p.get_tipo_display}}</td>
-                    <td>{{p.get_estado_display}}</td>
-                    <td>{{p.cor}}</td>
-                    <td>
-                        {% if p.foto %}
-                            <img src="{{ p.foto.url }}" class="img-carro">
-                        {% else %}
-                            <span class="text-muted small">Sem foto</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a class="btn btn-danger btn-sm" href="/stok/deletar_produto/{{p.id}}">Excluir</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <title>Lista de Produtos</title>
+    <style>
+        body { background-color: #f8f9fa; }
+        .table th, .table td { vertical-align: middle; }
+        .img-carro {
+            width: 100px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        /* Melhora o visual dos filtros no mobile */
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+    </style>
+  </head>
+  <body>
+
+    <div class="container py-4">
+      <h2 class="mb-4">Estoque de Veículos</h2>
+
+      <div class="filter-section">
+          <form action="{% url 'listar_produtos_preco' %}" method="GET">
+              <div class="row g-3 align-items-end">
+                  <div class="col-12 col-md-4">
+                      <label class="form-label small fw-bold">Preço mínimo (R$):</label>
+                      <input class="form-control" type="number" step="0.01" name="preco">
+                  </div>
+                  <div class="col-12 col-md-2">
+                      <button class="btn btn-primary w-100" type="submit">Filtrar Preço</button>
+                  </div>
+
+                  <div class="col-12 col-md-4">
+                      <label class="form-label small fw-bold">Tipo de veículo:</label>
+                      <select class="form-control" name="tipo">
+                          <option value="">Todos</option>
+                          <option value="eletrico">Elétrico</option>
+                          <option value="hibrido">Híbrido</option>
+                          <option value="combustao">Combustão</option>
+                      </select>
+                  </div>
+                  <div class="col-12 col-md-2">
+                      <button class="btn btn-primary w-100" type="submit">Filtrar Tipo</button>
+                  </div>
+              </div>
+          </form>
+      </div>
+
+      <div class="d-md-none text-muted mb-2" style="font-size: 0.75rem;">
+          <i class="bi bi-arrow-left-right"></i> Arraste para o lado para ver mais →
+      </div>
+      
+      <div class="table-responsive bg-white rounded shadow-sm">
+          <table class="table table-hover text-nowrap mb-0">
+              <thead class="table-dark">
+                  <tr>
+                      <th>Marca</th>
+                      <th>Modelo</th>
+                      <th>Ano</th>
+                      <th>Preço</th>
+                      <th>Tipo</th>
+                      <th>Estado</th>
+                      <th>Cor</th>
+                      <th>Foto</th>
+                      <th class="text-center">Ações</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for p in produtos %}
+                  <tr>
+                      <td>{{p.get_marca_display}}</td>
+                      <td><strong>{{p.modelo}}</strong></td>
+                      <td>{{p.ano_fabricacao}}</td>
+                      <td class="text-success fw-bold">R${{p.preco|br_money}}</td>
+                      <td>{{p.get_tipo_display}}</td>
+                      <td><span class="badge bg-info text-dark">{{p.get_estado_display}}</span></td>
+                      <td>{{p.cor}}</td>
+                      <td>
+                          {% if p.foto %}
+                              <img src="{{ p.foto.url }}" class="img-carro">
+                          {% else %}
+                              <small class="text-muted">Sem foto</small>
+                          {% endif %}
+                      </td>
+                      <td class="text-center">
+                          <a class="btn btn-outline-danger btn-sm" href="/stok/deletar_produto/{{p.id}}">Excluir</a>
+                      </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                      <td colspan="9" class="text-center py-4 text-muted">Nenhum veículo encontrado.</td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+      </div>
+
+      <div class="mt-4">
+          <a href="{% url 'cadastrar_produto' %}" class="btn btn-success btn-lg w-100 d-md-inline-block" style="width: auto !important;">+ Cadastrar novo veículo</a>
+      </div>
     </div>
-    
-    <a href="{% url 'cadastrar_produto' %}" class="btn btn-success mt-3 w-100 d-md-inline-block">Cadastrar novo veículo</a>
-</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
