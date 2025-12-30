@@ -1,101 +1,59 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
-    <title>Lista de produtos</title>
-    <style>
-        .table th, .table td {
-            padding: 0.5rem;
-            font-size: 0.9rem;
-        }
-        .table th:nth-child(1), .table td:nth-child(1) { width: 8%; } /* Marca */
-        .table th:nth-child(2), .table td:nth-child(2) { width: 10%; } /* Modelo */
-        .table th:nth-child(3), .table td:nth-child(3) { width: 8%; } /* Ano */
-        .table th:nth-child(4), .table td:nth-child(4) { width: 10%; } /* Preço */
-        .table th:nth-child(5), .table td:nth-child(5) { width: 8%; } /* Tipo */
-        .table th:nth-child(6), .table td:nth-child(6) { width: 8%; } /* Estado */
-        .table th:nth-child(7), .table td:nth-child(7) { width: 8%; } /* Cor */
-        .table th:nth-child(8), .table td:nth-child(8) { width: 20%; } /* Foto */
-        .table th:nth-child(9), .table td:nth-child(9) { width: 10%; } /* Excluir */
-    </style>
-  </head>
-  <body>
-  {% load filters %}
-
-    <div class="container">
-      <br>
-      <br>
-     
-      <br>
-      <br>
-      <form action="{% url 'listar_produtos_preco' %}" method="GET">
-      <div class="d-flex gap-2 mb-3">
-             </div>
-      <div class="d-flex align-items-end gap-2 mb-3">
-        <div>
-          <label for="">Digite o preço mínimo (R$):</label>
-          <input class="form-control" type="number" step="0.01" name="preco" style="max-width: 300px;">
-        </div>
-        <input class="btn btn-primary" type="submit" value="Filtrar por Preço">
-      </div>
-      <div class="d-flex align-items-end gap-2 mb-3">
-        <div>
-          <label for="">Tipo de veículo:</label>
-          <select class="form-control" name="tipo" style="max-width: 300px;">
-              <option value="">Todos</option>
-              <option value="eletrico">Elétrico</option>
-              <option value="hibrido">Híbrido</option>
-              <option value="combustao">Combustão</option>
-          </select>
-        </div>
-        <input class="btn btn-primary" type="submit" value="Filtrar por Tipo">
-      </div>
-      
-
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Marca</th>
-          <th scope="col">Modelo</th>
-          <th scope="col">Ano de Fabricação</th>
-          <th scope="col">Preço</th>
-          <th scope="col">Tipo</th>
-          <th scope="col">Estado</th>
-          <th scope="col">Cor</th>
-          <th scope="col">Foto</th>
-          <th scope="col">Excluir</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          {% for p in produtos %}
-          <th scope="row">{{p.get_marca_display}}</th>
-          <td>{{p.modelo}}</td>
-          <td>{{p.ano_fabricacao}}</td>
-          <td>R${{p.preco|br_money}}</td>
-          <td>{{p.get_tipo_display}}</td>
-          <td>{{p.get_estado_display}}</td>
-          <td>{{p.cor}}</td>
-          <td>{% if p.foto %}<img src="{{ p.foto.url }}" style="max-width: 200px; max-height: 200px; width: auto; height: auto;">{% else %}Sem foto{% endif %}</td>
-          <td><a class="btn btn-danger" href="/stok/deletar_produto/{{p.id}}">Excluir</a></td>
-        </tr>
-        {% endfor %}
-      </tbody>
-     
+<style>
+    /* Estilo para deixar a tabela mais limpa no mobile */
+    .table th, .table td {
+        padding: 12px 8px; /* Espaço maior para o dedo clicar */
+        vertical-align: middle;
+    }
     
-    </table>
-    <a href="{% url 'cadastrar_produto' %}" class="btn btn-success mb-3">Cadastrar produto</a>
-  </div>
- 
+    /* Faz com que a foto não fique gigante e não quebre o layout */
+    .img-carro {
+        width: 100px;
+        height: auto;
+        border-radius: 5px;
+    }
+</style>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-
-
-  </body>
-</html>
+<div class="container">
+    <div class="table-responsive">
+        <table class="table table-hover text-nowrap"> 
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">Marca</th>
+                    <th scope="col">Modelo</th>
+                    <th scope="col">Ano</th>
+                    <th scope="col">Preço</th>
+                    <th scope="col">Tipo</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Cor</th>
+                    <th scope="col">Foto</th>
+                    <th scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in produtos %}
+                <tr>
+                    <td>{{p.get_marca_display}}</td>
+                    <td>{{p.modelo}}</td>
+                    <td>{{p.ano_fabricacao}}</td>
+                    <td>R${{p.preco|br_money}}</td>
+                    <td>{{p.get_tipo_display}}</td>
+                    <td>{{p.get_estado_display}}</td>
+                    <td>{{p.cor}}</td>
+                    <td>
+                        {% if p.foto %}
+                            <img src="{{ p.foto.url }}" class="img-carro">
+                        {% else %}
+                            <span class="text-muted small">Sem foto</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a class="btn btn-danger btn-sm" href="/stok/deletar_produto/{{p.id}}">Excluir</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <a href="{% url 'cadastrar_produto' %}" class="btn btn-success mt-3 w-100 d-md-inline-block">Cadastrar novo veículo</a>
+</div>
