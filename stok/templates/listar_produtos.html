@@ -28,12 +28,12 @@
 {% load filters %}
 
 <div class="container py-4">
-    <h2 class="text-center mb-4">Gerenciar Estoque</h2>
+    <h2 class="text-center mb-4">Carros Shopping</h2>
 
     <form action="{% url 'listar_produtos_preco' %}" method="GET" class="card card-body shadow-sm mb-4">
         <div class="row g-3 align-items-end">
             <div class="col-12 col-md-4">
-                <label class="form-label">Preço Máximo (Até R$):</label>
+                <label class="form-label">Preço a partir de:</label>
                 <input class="form-control mask-money" type="text" name="preco" placeholder="Ex: 50.000,00">
             </div>
             <div class="col-12 col-md-4">
